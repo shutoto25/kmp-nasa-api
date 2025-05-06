@@ -1,0 +1,16 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# プロジェクト構成ガイド
+
+このプロジェクトはKotlin Multiplatform（KMP）構成です。主なディレクトリは以下の通りです：
+
+- [`composeApp`](mdc:composeApp): Compose Multiplatformを利用したUIコードを共有するためのディレクトリです。`commonMain`サブディレクトリには全プラットフォーム共通のコードが含まれます。
+- [`iosApp`](mdc:iosApp): iOSアプリケーションのエントリーポイントです。SwiftUIコードやiOS固有の設定もここに含まれます。
+- [`shared`](mdc:shared): Android/iOS両方で共有されるビジネスロジックやデータ層のコードを格納します。`commonMain`サブディレクトリが最も重要です。
+
+ビルドシステムにはGradle（Kotlin DSL）が使われています。
+
+詳しくは[README.md](mdc:README.md)も参照してください。
