@@ -1,6 +1,5 @@
 package org.example.project.model
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -9,11 +8,12 @@ import kotlinx.serialization.Serializable
  * NASAのAPOD APIから返される画像データの構造を定義します。
  * このクラスはJSONのシリアライズ/デシリアライズに対応しています。
  * 
+ * @property copyright 著作権情報（存在しない場合はnull）
  * @property date 画像の日付（YYYY-MM-DD形式）
  * @property explanation 画像の説明文
- * @property hdUrl 高解像度画像のURL（存在しない場合はnull）
- * @property mediaType メディアの種類（"image"または"video"）
- * @property serviceVersion APIのバージョン
+ * @property hdurl 高解像度画像のURL（存在しない場合はnull）
+ * @property media_type メディアの種類（"image"または"video"）
+ * @property service_version APIのバージョン
  * @property title 画像のタイトル
  * @property url 画像のURL
  * 
@@ -21,14 +21,12 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class ApodResponse(
+    val copyright: String? = null,
     val date: String,
     val explanation: String,
-    @SerialName("hdurl")
-    val hdUrl: String?,
-    @SerialName("media_type")
-    val mediaType: String,
-    @SerialName("service_version")
-    val serviceVersion: String,
+    val hdurl: String? = null,
+    val media_type: String,
+    val service_version: String,
     val title: String,
     val url: String
 ) 

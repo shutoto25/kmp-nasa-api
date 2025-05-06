@@ -7,7 +7,6 @@ alwaysApply: true
 
 ## 基本原則
 - **Kotlinスタイルガイド**に準拠すること。
-- 共有コード（`shared`や`composeApp`の`commonMain`）では、プラットフォーム依存のAPI呼び出しは避け、共通APIを利用する。
 - プラットフォーム固有の処理は`androidMain`や`iosMain`に分離する。
 - UIは**宣言的UI（Jetpack Compose/Swift UI）**を利用する。
 - SOLID原則を守る。
