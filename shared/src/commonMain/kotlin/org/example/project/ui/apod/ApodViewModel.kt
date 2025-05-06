@@ -29,9 +29,6 @@ class ApodViewModel(private val nasaApi: NasaApi) {
     private val _apod = MutableStateFlow<ApodResponse?>(null)
     val apod: StateFlow<ApodResponse?> = _apod.asStateFlow()
     
-    private val _favorites = MutableStateFlow<List<ApodResponse>>(emptyList())
-    val favorites: StateFlow<List<ApodResponse>> = _favorites.asStateFlow()
-    
     init {
         loadTodayImage()
     }
@@ -44,14 +41,13 @@ class ApodViewModel(private val nasaApi: NasaApi) {
      */
     fun loadTodayImage() {
         viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
             try {
-                _isLoading.value = true
-                _error.value = null
-                
                 val response = nasaApi.getApod()
                 _apod.value = response
             } catch (e: Exception) {
-                _error.value = e.message ?: "Unknown error"
+                _error.value = e.message ?: "Unknown error occurred"
             } finally {
                 _isLoading.value = false
             }
@@ -72,38 +68,13 @@ class ApodViewModel(private val nasaApi: NasaApi) {
                 val response = nasaApi.getApod(date)
                 _apod.value = response
             } catch (e: Exception) {
-                _error.value = e.message ?: "Unknown error"
+                println("Error in loadImageByDate: ${e.message}")
+                println("Error type: ${e.javaClass.name}")
+                e.printStackTrace()
+                _error.value = e.message ?: "Unknown error occurred"
             } finally {
                 _isLoading.value = false
             }
         }
-    }
-    
-    /**
-     * 画像をお気に入りに追加・削除
-     * 
-     * @param apod お気に入りに追加・削除する画像データ
-     */
-    fun toggleFavorite(apod: ApodResponse) {
-        val currentFavorites = _favorites.value.toMutableList()
-        val existingIndex = currentFavorites.indexOfFirst { it.date == apod.date }
-        
-        if (existingIndex >= 0) {
-            currentFavorites.removeAt(existingIndex)
-        } else {
-            currentFavorites.add(apod)
-        }
-        
-        _favorites.value = currentFavorites
-    }
-    
-    /**
-     * 画像がお気に入りかどうかを判定
-     * 
-     * @param apod 判定する画像データ
-     * @return お気に入りの場合はtrue、そうでない場合はfalse
-     */
-    fun isFavorite(apod: ApodResponse): Boolean {
-        return _favorites.value.any { it.date == apod.date }
     }
 } 
