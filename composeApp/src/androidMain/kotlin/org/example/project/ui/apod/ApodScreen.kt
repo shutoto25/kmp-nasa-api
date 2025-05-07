@@ -10,13 +10,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import android.app.DatePickerDialog
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import coil.compose.AsyncImage
 import org.example.project.model.ApodResponse
-import org.example.project.ui.components.DatePickerDialog
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -29,6 +30,7 @@ fun ApodScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
     var showDatePicker by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Box(modifier = modifier.fillMaxSize()) {
         when {
@@ -55,13 +57,35 @@ fun ApodScreen(
     }
 
     if (showDatePicker) {
-        DatePickerDialog(
-            onDateSelected = { date ->
-                viewModel.loadImageByDate(date.format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE))
-                showDatePicker = false
-            },
-            onDismiss = { showDatePicker = false }
-        )
+        val currentDate = LocalDate.now()
+        val datePickerDialog = remember {
+            DatePickerDialog(
+                context,
+                { _, year, month, dayOfMonth ->
+                    val selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
+                    if (selectedDate <= currentDate) {
+                        viewModel.loadImageByDate(selectedDate.format(DateTimeFormatter.ISO_LOCAL_DATE))
+                    } else {
+                        // 未来の日付が選択された場合のエラーメッセージ
+                        viewModel.setError("未来の日付は選択できません")
+                    }
+                    showDatePicker = false
+                },
+                currentDate.year,
+                currentDate.monthValue - 1,
+                currentDate.dayOfMonth
+            ).apply {
+                // 未来の日付を選択できないように制限
+                datePicker.maxDate = System.currentTimeMillis()
+            }
+        }
+
+        DisposableEffect(Unit) {
+            datePickerDialog.show()
+            onDispose {
+                datePickerDialog.dismiss()
+            }
+        }
     }
 }
 

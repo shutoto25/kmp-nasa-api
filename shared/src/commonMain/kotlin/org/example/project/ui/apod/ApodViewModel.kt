@@ -34,6 +34,15 @@ class ApodViewModel(private val nasaApi: NasaApi) {
     }
     
     /**
+     * エラーメッセージを設定
+     * 
+     * @param message 表示するエラーメッセージ
+     */
+    fun setError(message: String) {
+        _error.value = message
+    }
+    
+    /**
      * 今日のAPOD画像を取得
      * 
      * 今日のAPOD画像を取得し、状態を更新します。
