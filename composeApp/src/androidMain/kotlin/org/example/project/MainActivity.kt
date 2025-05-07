@@ -8,9 +8,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import io.ktor.client.*
+import io.ktor.client.engine.android.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
 import org.example.project.ui.apod.ApodScreen
 import org.example.project.ui.apod.ApodViewModel
 import org.example.project.api.NasaApi
+import org.example.project.api.NasaApiClientImpl
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,7 +26,16 @@ class MainActivity : ComponentActivity() {
         Log.d("MainActivity", "API Key from BuildConfig: '$apiKey'")
         Log.d("MainActivity", "API Key length: ${apiKey.length}")
         
-        val nasaApi = NasaApi(apiKey = apiKey)
+        val httpClient = HttpClient(Android) {
+            install(ContentNegotiation) {
+                json(Json {
+                    ignoreUnknownKeys = true
+                    isLenient = true
+                })
+            }
+        }
+        
+        val nasaApi: NasaApi = NasaApiClientImpl(httpClient = httpClient, apiKey = apiKey)
         Log.d("MainActivity", "NasaApi instance created")
         
         setContent {

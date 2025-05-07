@@ -77,9 +77,6 @@ class ApodViewModel(private val nasaApi: NasaApi) {
                 val response = nasaApi.getApod(date)
                 _apod.value = response
             } catch (e: Exception) {
-                println("Error in loadImageByDate: ${e.message}")
-                println("Error type: ${e.javaClass.name}")
-                e.printStackTrace()
                 _error.value = e.message ?: "Unknown error occurred"
             } finally {
                 _isLoading.value = false

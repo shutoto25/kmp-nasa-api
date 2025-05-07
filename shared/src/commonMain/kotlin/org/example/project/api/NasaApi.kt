@@ -2,51 +2,41 @@ package org.example.project.api
 
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.engine.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import org.example.project.model.ApodResponse
 
-class NasaApi(private val apiKey: String) {
-    private val client = HttpClient {
-        install(ContentNegotiation) {
-            json(Json {
-                ignoreUnknownKeys = true
-                isLenient = true
-            })
-        }
-    }
-    
-    private val baseUrl = "https://api.nasa.gov/planetary/apod"
-    
-    suspend fun getApod(date: String? = null): ApodResponse = withContext(Dispatchers.IO) {
+interface NasaApi {
+    suspend fun getApod(date: String? = null): ApodResponse
+}
+
+class NasaApiClientImpl(
+    private val httpClient: HttpClient,
+    private val apiKey: String,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Default
+) : NasaApi {
+    override suspend fun getApod(date: String?): ApodResponse = withContext(dispatcher) {
         try {
-            val url = buildString {
-                append(baseUrl)
-                append("?api_key=")
-                append(apiKey.trim())
-                if (date != null) {
-                    append("&date=")
-                    append(date)
-                }
+            val response = httpClient.get("$BASE_URL/planetary/apod") {
+                parameter("api_key", apiKey)
+                date?.let { parameter("date", it) }
             }
-            
-            println("Requesting URL: $url")
-            val response = client.get(url)
-            println("Response status: ${response.status}")
-            
-            val apodResponse = response.body<ApodResponse>()
-            println("Received APOD response: $apodResponse")
-            
-            apodResponse
+            response.body()
         } catch (e: Exception) {
-            println("Error in getApod: ${e.message}")
-            println("Error type: ${e.javaClass.name}")
-            e.printStackTrace()
-            throw e
+            throw NasaApiException("Failed to fetch APOD data: ${e.message}", e)
         }
     }
-} 
+
+    companion object {
+        private const val BASE_URL = "https://api.nasa.gov"
+    }
+}
+
+class NasaApiException(message: String, cause: Throwable? = null) : Exception(message, cause) 
