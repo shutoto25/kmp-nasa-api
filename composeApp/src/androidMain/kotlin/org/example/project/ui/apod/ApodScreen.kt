@@ -3,10 +3,10 @@ package org.example.project.ui.apod
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -16,6 +16,9 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import coil.compose.AsyncImage
 import org.example.project.model.ApodResponse
+import org.example.project.ui.components.DatePickerDialog
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun ApodScreen(
@@ -25,6 +28,7 @@ fun ApodScreen(
     val apod by viewModel.apod.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
+    var showDatePicker by remember { mutableStateOf(false) }
 
     Box(modifier = modifier.fillMaxSize()) {
         when {
@@ -43,16 +47,28 @@ fun ApodScreen(
             apod != null -> {
                 ApodContent(
                     apod = apod!!,
+                    onDateSelect = { showDatePicker = true },
                     modifier = Modifier.fillMaxSize()
                 )
             }
         }
+    }
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDateSelected = { date ->
+                viewModel.loadImageByDate(date.format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE))
+                showDatePicker = false
+            },
+            onDismiss = { showDatePicker = false }
+        )
     }
 }
 
 @Composable
 private fun ApodContent(
     apod: ApodResponse,
+    onDateSelect: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -60,6 +76,41 @@ private fun ApodContent(
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = apod.date,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Surface(
+                onClick = onDateSelect,
+                modifier = Modifier.size(48.dp),
+                shape = MaterialTheme.shapes.small,
+                color = MaterialTheme.colorScheme.surface
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = "日付を選択",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         when (apod.media_type) {
             "image" -> {
                 AsyncImage(
@@ -95,14 +146,6 @@ private fun ApodContent(
         Text(
             text = apod.title,
             style = MaterialTheme.typography.headlineMedium
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = apod.date,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         Spacer(modifier = Modifier.height(16.dp))
