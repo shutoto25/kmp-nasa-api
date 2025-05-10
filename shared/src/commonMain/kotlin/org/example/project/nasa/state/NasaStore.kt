@@ -10,6 +10,11 @@ import kotlinx.coroutines.launch
 import org.example.project.core.state.Store
 import org.example.project.nasa.NasaRepository
 
+/**
+ * NASA APOD機能の状態管理を行うストアクラス。
+ *
+ * @property nasaRepository APODデータの取得とキャッシュ管理を行うリポジトリ
+ */
 class NasaStore(
     private val nasaRepository: NasaRepository
 ) : Store<NasaState, NasaAction, NasaSideEffect>, CoroutineScope by CoroutineScope(Dispatchers.Main) {
@@ -20,6 +25,11 @@ class NasaStore(
     override fun observeState(): StateFlow<NasaState> = state
     override fun observeSideEffect(): Flow<NasaSideEffect> = sideEffect
 
+    /**
+     * アクションをディスパッチし、適切な状態更新と副作用の発生を行います。
+     *
+     * @param action 実行するアクション
+     */
     override fun dispatch(action: NasaAction) {
         println("NasaStore - Action: $action")
         val oldState = state.value
@@ -56,6 +66,12 @@ class NasaStore(
         }
     }
 
+    /**
+     * APODデータを読み込みます。
+     *
+     * @param forceUpdate キャッシュを無視して強制的に更新するかどうか
+     * @param date 取得する日付（nullの場合は最新のデータを取得）
+     */
     private suspend fun loadApod(forceUpdate: Boolean, date: String? = null) {
         try {
             val apod = nasaRepository.getAstronomyPictureOfDay(forceUpdate, date)
@@ -65,6 +81,9 @@ class NasaStore(
         }
     }
 
+    /**
+     * キャッシュをクリアします。
+     */
     private suspend fun clearCache() {
         try {
             nasaRepository.clearCache()
