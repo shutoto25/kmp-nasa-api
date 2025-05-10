@@ -10,11 +10,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
-
-import kmp_nasa_api.composeapp.generated.resources.Res
-import kmp_nasa_api.composeapp.generated.resources.compose_multiplatform
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
@@ -28,7 +25,7 @@ fun App() {
             AnimatedVisibility(showContent) {
                 val greeting = remember { Greeting().greet() }
                 Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
+//                    Image(painterResource(R.drawable.compose_multiplatform), null)
                     Text("Compose: $greeting")
                 }
             }

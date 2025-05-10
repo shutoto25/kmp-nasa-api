@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--sharedモジュールは独立したAndroidライブラリとして扱われるため自身のマニフェストファイルが必要-->
+    <!--これにより、sharedモジュールを他のプロジェクトでも再利用できる-->
+    <uses-permission android:name="android.permission.INTERNET" />
+</manifest>
