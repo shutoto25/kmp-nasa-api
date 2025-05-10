@@ -38,8 +38,6 @@ kotlin {
             implementation(libs.napier)
             //JSON
             implementation(libs.kotlinx.serialization.json)
-            //Key-Value storage
-            implementation(libs.multiplatform.settings)
             // DI
             api(libs.koin.core)
         }
@@ -48,6 +46,10 @@ kotlin {
         androidMain.dependencies {
             //Network
             implementation(libs.ktor.client.okhttp)
+            // russhwolf
+            implementation(libs.multiplatform.settings)
+            implementation(libs.multiplatform.settings.datastore)
+            implementation(libs.multiplatform.settings.preferences)
         }
 
         // iOSd固有の依存関係

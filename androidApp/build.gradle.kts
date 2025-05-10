@@ -72,5 +72,14 @@ dependencies {
     implementation(libs.androidx.core)
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.navigation.compose)
+    //Network
+    implementation(libs.ktor.core)
+    implementation(libs.ktor.logging)
+    //JSON
+    implementation(libs.kotlinx.serialization.json)
+    // russhwolf
+    implementation(libs.multiplatform.settings)
+    implementation(libs.multiplatform.settings.datastore)
+    implementation(libs.multiplatform.settings.preferences)
 }
 

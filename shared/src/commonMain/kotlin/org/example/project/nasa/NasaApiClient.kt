@@ -1,9 +1,6 @@
 package org.example.project.nasa
 
 import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.http.*
 import kotlinx.serialization.json.Json
 import org.example.project.core.network.BaseApiClient
 import org.example.project.nasa.data.NasaApodData
