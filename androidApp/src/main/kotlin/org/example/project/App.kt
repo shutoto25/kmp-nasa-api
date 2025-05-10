@@ -13,22 +13,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 
-@Composable
-@Preview
-fun App() {
-    MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
-            }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-//                    Image(painterResource(R.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
-                }
-            }
+class App : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        startKoin {
+            androidContext(this@App)
+            modules(listOf(coreModule, nasaModule))
         }
     }
+
+    private val coreModule = module {
+        // 共通のインスタンス
+        single { HttpClient() }
+        single { 
+            Json {
+                ignoreUnknownKeys = true
+                isLenient = true
+                encodeDefaults = false
+            }
+        }
+        single { 
+            com.russhwolf.settings.Settings(
+                this@App.getSharedPreferences("app_prefs", MODE_PRIVATE)
+                ) 
+    }
+}
 }
