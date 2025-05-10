@@ -48,8 +48,6 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             // russhwolf
             implementation(libs.multiplatform.settings)
-            implementation(libs.multiplatform.settings.datastore)
-            implementation(libs.multiplatform.settings.preferences)
         }
 
         // iOSd固有の依存関係

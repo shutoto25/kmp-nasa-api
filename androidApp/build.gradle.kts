@@ -79,7 +79,5 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     // russhwolf
     implementation(libs.multiplatform.settings)
-    implementation(libs.multiplatform.settings.datastore)
-    implementation(libs.multiplatform.settings.preferences)
 }
 
