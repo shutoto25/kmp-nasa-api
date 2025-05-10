@@ -1,4 +1,4 @@
-package org.example.project
+package org.example.project.nasa.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
