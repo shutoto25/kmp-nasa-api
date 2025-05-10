@@ -1,7 +1,5 @@
 package org.example.project.core.di
 
-import io.ktor.client.*
-import kotlinx.serialization.json.Json
 import org.example.project.nasa.NasaApiClient
 import org.example.project.nasa.NasaRepository
 import org.example.project.nasa.state.NasaStore
