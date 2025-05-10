@@ -25,6 +25,10 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     buildFeatures {
@@ -64,6 +68,9 @@ dependencies {
     //Navigation
     implementation(libs.voyager.navigator)
     //WorkManager
-    implementation(libs.work.runtime.ktx)
+    implementation(libs.work.runtime)
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.androidx.navigation.compose)
 }
 
