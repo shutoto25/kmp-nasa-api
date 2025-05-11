@@ -9,3 +9,5 @@ interface PlatformStorage {
     fun remove(key: String)
     fun clear()
 }
+
+expect fun createPlatformStorage(): PlatformStorage

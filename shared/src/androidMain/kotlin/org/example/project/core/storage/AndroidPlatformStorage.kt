@@ -1,12 +1,11 @@
-package org.example.project.di
+package org.example.project.core.storage
 
 import android.content.Context
-import org.example.project.core.storage.PlatformStorage
 import androidx.core.content.edit
 
 
 class AndroidPlatformStorage(private val context: Context) : PlatformStorage {
-    private val prefs = context.getSharedPreferences("nasa_storage", Context.MODE_PRIVATE)
+    private val prefs = context.getSharedPreferences("app_storage", Context.MODE_PRIVATE)
 
     override fun getString(key: String): String? {
         return prefs.getString(key, null)
@@ -23,4 +22,11 @@ class AndroidPlatformStorage(private val context: Context) : PlatformStorage {
     override fun clear() {
         prefs.edit { clear() }
     }
+}
+
+/**
+ * Android環境では実際に呼ばれないが、expect/actual規約を満たすために提供
+ */
+actual fun createPlatformStorage(): PlatformStorage {
+    error("Android環境ではこのメソッドは使用されません。代わりにKoinのDIを使用してください。")
 }

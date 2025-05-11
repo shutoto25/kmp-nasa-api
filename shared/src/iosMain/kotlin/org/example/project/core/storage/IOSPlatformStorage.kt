@@ -3,8 +3,7 @@ package org.example.project.core.storage
 import platform.Foundation.NSUserDefaults
 
 /**
- * iOS用のPlatformStorageの実装。
- * NSUserDefaultsを使用してデータを保存します。
+ * NSUserDefaultsのデータを保存
  */
 class IOSPlatformStorage : PlatformStorage {
     private val userDefaults = NSUserDefaults.standardUserDefaults
@@ -33,4 +32,11 @@ class IOSPlatformStorage : PlatformStorage {
             }
         }
     }
+}
+
+/**
+ * actual実装
+ */
+actual fun createPlatformStorage(): PlatformStorage {
+    return IOSPlatformStorage()
 }

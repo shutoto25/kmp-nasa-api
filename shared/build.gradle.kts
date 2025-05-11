@@ -46,9 +46,14 @@ kotlin {
         androidMain.dependencies {
             //Network
             implementation(libs.ktor.client.okhttp)
+            // koin
+            implementation(libs.koin.android)
             // russhwolf
             implementation(libs.multiplatform.settings)
+            // androix
+            implementation(libs.androidx.core)
         }
+
 
         // iOSd固有の依存関係
         iosMain.dependencies {

@@ -3,7 +3,7 @@ import Shared
 
 struct NasaView: View {
     @ObservedObject var viewModel = NasaViewModel()
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
@@ -14,15 +14,15 @@ struct NasaView: View {
                     Text(apod.title)
                         .font(.title)
                         .fontWeight(.bold)
-                    
+
                     if let copyright = apod.copyright {
                         Text("© \(copyright)")
                             .font(.caption)
                     }
-                    
+
                     Text(apod.date)
                         .font(.subheadline)
-                    
+
                     if apod.mediaType == "image", let url = URL(string: apod.url) {
                         AsyncImage(url: url) { phase in
                             switch phase {
@@ -41,7 +41,7 @@ struct NasaView: View {
                         }
                         .frame(maxWidth: .infinity)
                     }
-                    
+
                     Text(apod.explanation)
                         .font(.body)
                 } else {
@@ -49,7 +49,7 @@ struct NasaView: View {
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity, minHeight: 200)
                 }
-                
+
                 Button(action: {
                     viewModel.loadApod(forceUpdate: true)
                 }) {
@@ -61,7 +61,7 @@ struct NasaView: View {
                         .cornerRadius(8)
                 }
                 .padding(.top, 16)
-                
+
                 if let errorMessage = viewModel.state.errorMessage {
                     Text(errorMessage)
                         .foregroundColor(.white)
@@ -90,20 +90,20 @@ struct NasaView: View {
 
 class NasaViewModel: ObservableObject {
     @Published var state: NasaState
-    
+
     private let store: NasaStore
     private var stateWatcher: Closeable?
     private var effectWatcher: Closeable?
-    
+
     init() {
         let nasaStore = NasaStoreHelper.shared.getStore()
         self.store = nasaStore
         self.state = nasaStore.observeState().value as! NasaState
-        
+
         stateWatcher = nasaStore.watchState().watch { [weak self] state in
             self?.state = state as! NasaState
         }
-        
+
         effectWatcher = nasaStore.watchSideEffect().watch { [weak self] effect in
             if let error = effect as? NasaSideEffect.Error {
                 // エラーハンドリング
@@ -111,11 +111,11 @@ class NasaViewModel: ObservableObject {
             }
         }
     }
-    
+
     func loadApod(forceUpdate: Bool, date: String? = nil) {
         store.dispatch(action: NasaAction.LoadApod(forceUpdate: forceUpdate, date: date))
     }
-    
+
     deinit {
         stateWatcher?.close()
         effectWatcher?.close()
@@ -125,21 +125,21 @@ class NasaViewModel: ObservableObject {
 // シングルトンヘルパーでストアへのアクセスを管理
 class NasaStoreHelper {
     static let shared = NasaStoreHelper()
-    
+
     private var nasaStore: NasaStore?
-    
+
     private init() {}
-    
+
     func getStore() -> NasaStore {
         if let store = nasaStore {
             return store
         }
-        
+
         let store = NasaStore(nasaRepository: getRepository())
         nasaStore = store
         return store
     }
-    
+
     private func getRepository() -> NasaRepository {
         return NasaRepository(
             apiClient: NasaApiClient(
