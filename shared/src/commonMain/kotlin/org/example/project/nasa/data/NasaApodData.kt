@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * NASAのAstronomy Picture of the Day (APOD) APIのレスポンスデータを表すクラス。
+ * NASAのAstronomy Picture of the Day (APOD) APIのレスポンスデータを表すクラス
  *
  * @property copyright 画像の著作権情報（オプション）
  * @property date 画像の日付（YYYY-MM-DD形式）
@@ -18,11 +18,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class NasaApodData(
     @SerialName("copyright") val copyright: String? = null,
-    @SerialName("date") val date: String,
-    @SerialName("explanation") val explanation: String,
+    @SerialName("date") val date: String = "",
+    @SerialName("explanation") val explanation: String = "",
     @SerialName("hdurl") val hdUrl: String? = null,
-    @SerialName("media_type") val mediaType: String,
-    @SerialName("service_version") val serviceVersion: String,
-    @SerialName("title") val title: String,
-    @SerialName("url") val url: String
+    @SerialName("media_type") val mediaType: String = "",
+    @SerialName("service_version") val serviceVersion: String = "",
+    @SerialName("title") val title: String = "",
+    @SerialName("url") val url: String = ""
 )

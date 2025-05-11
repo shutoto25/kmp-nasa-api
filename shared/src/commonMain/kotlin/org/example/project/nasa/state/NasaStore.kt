@@ -8,19 +8,29 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.example.project.core.state.Store
+import org.example.project.core.util.DateUtils.getTodayDate
 import org.example.project.nasa.NasaRepository
 
 /**
- * NASA APOD機能の状態管理を行うストアクラス。
+ * NASA APOD機能の状態管理を行うストアクラス
  *
  * @property nasaRepository APODデータの取得とキャッシュ管理を行うリポジトリ
  */
 class NasaStore(
     private val nasaRepository: NasaRepository
 ) : Store<NasaState, NasaAction, NasaSideEffect>, CoroutineScope by CoroutineScope(Dispatchers.Main) {
-
+    private val TAG = "NasaStore"
     private val state = MutableStateFlow(NasaState())
     private val sideEffect = MutableSharedFlow<NasaSideEffect>()
+
+    init {
+        val todayDate = getTodayDate()
+
+        // 初期化時にデータを読み込む
+        launch {
+            dispatch(NasaAction.LoadApod(forceUpdate = true, date = todayDate))
+        }
+    }
 
     override fun observeState(): StateFlow<NasaState> = state
     override fun observeSideEffect(): Flow<NasaSideEffect> = sideEffect
@@ -31,7 +41,6 @@ class NasaStore(
      * @param action 実行するアクション
      */
     override fun dispatch(action: NasaAction) {
-        println("NasaStore - Action: $action")
         val oldState = state.value
 
         val newState = when (action) {
@@ -48,8 +57,16 @@ class NasaStore(
                 oldState.copy(loading = false, apod = action.apod, errorMessage = null)
             }
             is NasaAction.Error -> {
-                launch { sideEffect.emit(NasaSideEffect.Error(action.error)) }
-                oldState.copy(loading = false, errorMessage = action.error.message)
+
+                // APIに特定の日付のデータがない場合の特別なハンドリング
+                if (action.error.message?.contains("No data available for date") == true) {
+                    // 最新データを再取得
+                    launch { loadApod(true, null) }
+                    oldState.copy(errorMessage = "指定された日付のデータがありません。最新のデータを表示します。")
+                } else {
+                    launch { sideEffect.emit(NasaSideEffect.Error(action.error)) }
+                    oldState.copy(loading = false, errorMessage = action.error.message)
+                }
             }
             is NasaAction.ClearError -> {
                 oldState.copy(errorMessage = null)
@@ -61,7 +78,6 @@ class NasaStore(
         }
 
         if (newState != oldState) {
-            println("NasaStore - NewState: $newState")
             state.value = newState
         }
     }
