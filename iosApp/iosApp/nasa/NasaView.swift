@@ -96,15 +96,15 @@ class NasaViewModel: ObservableObject {
     private var effectWatcher: Closeable?
 
     init() {
-        let nasaStore = NasaStoreHelper.shared.getStore()
-        self.store = nasaStore
-        self.state = nasaStore.observeState().value as! NasaState
+        // AppDependenciesからNasaStoreを取得
+        self.store = AppDependencies.shared.nasaStore
+        self.state = store.observeState().value as! NasaState
 
-        stateWatcher = nasaStore.watchState().watch { [weak self] state in
+        stateWatcher = store.watchState().watch { [weak self] state in
             self?.state = state as! NasaState
         }
 
-        effectWatcher = nasaStore.watchSideEffect().watch { [weak self] effect in
+        effectWatcher = store.watchSideEffect().watch { [weak self] effect in
             if let error = effect as? NasaSideEffect.Error {
                 // エラーハンドリング
                 print("Error: \(error.error.message ?? "Unknown error")")
@@ -119,56 +119,5 @@ class NasaViewModel: ObservableObject {
     deinit {
         stateWatcher?.close()
         effectWatcher?.close()
-    }
-}
-
-// シングルトンヘルパーでストアへのアクセスを管理
-class NasaStoreHelper {
-    static let shared = NasaStoreHelper()
-
-    private var nasaStore: NasaStore?
-
-    private init() {}
-
-    func getStore() -> NasaStore {
-        if let store = nasaStore {
-            return store
-        }
-
-        let store = NasaStore(nasaRepository: getRepository())
-        nasaStore = store
-        return store
-    }
-
-    private func getRepository() -> NasaRepository {
-        return NasaRepository(
-            apiClient: NasaApiClient(
-                httpClient: HttpClientFactory().create(),
-                json: JsonFactory().create()
-            ),
-            storage: NasaStorage(
-                settings: SettingsFactory().create(),
-                json: JsonFactory().create()
-            )
-        )
-    }
-}
-
-// ファクトリークラス
-class HttpClientFactory {
-    func create() -> HttpClient {
-        return HttpClient()
-    }
-}
-
-class JsonFactory {
-    func create() -> Json {
-        return Json()
-    }
-}
-
-class SettingsFactory {
-    func create() -> Settings {
-        return Settings()
     }
 }
