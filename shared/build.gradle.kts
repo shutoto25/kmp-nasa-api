@@ -40,6 +40,8 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             // DI
             api(libs.koin.core)
+            // Date
+            implementation(libs.kotlinx.datetime)
         }
 
         // Android固有の依存関係
