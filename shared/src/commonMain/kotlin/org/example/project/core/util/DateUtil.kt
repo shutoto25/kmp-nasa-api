@@ -15,4 +15,9 @@ object DateUtils {
         val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         return "${today.year}-${today.monthNumber.toString().padStart(2, '0')}-${today.dayOfMonth.toString().padStart(2, '0')}"
     }
+
+    fun createTiemestamp(): String {
+        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        return "${now.hour.toString().padStart(2, '0')}:${now.minute.toString().padStart(2, '0')}:${now.second.toString().padStart(2, '0')}.${(now.nanosecond / 1000000).toString().padStart(3, '0')}"
+    }
 }
