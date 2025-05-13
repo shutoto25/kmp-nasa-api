@@ -1,4 +1,4 @@
-package org.example.project.di
+package org.example.project.core.di
 
 import org.example.project.core.di.initPlatformKoin
 import org.example.project.core.storage.PlatformStorage

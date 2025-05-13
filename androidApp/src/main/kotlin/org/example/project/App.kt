@@ -1,12 +1,19 @@
 package org.example.project
 
 import android.app.Application
-import org.example.project.core.di.initKoinAndroid
+import org.example.project.di.AppModule
+import org.koin.android.ext.koin.androidContext
 
+/**
+ * アプリケーションクラス
+ */
 class App : Application() {
-
     override fun onCreate() {
         super.onCreate()
-        initKoinAndroid(this)
+
+        // Koinの初期化
+        AppModule.init {
+            androidContext(this@App)
+        }
     }
 }
